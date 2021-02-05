@@ -1,5 +1,4 @@
-#fichier à éxecuter dans le dossiet des datasets
-library(caret) #confusionMatrix
+#Par Quentin Guardia, qguardia66@gmail.com
 library(e1071) #naiveBayes et svm
 library(class) #knn
 library(MASS) #lda et qda
@@ -9,21 +8,23 @@ library(ROCR) #PRCurve
 library(PRROC) #PRCurve
 #en cas d'absence du package, écrire: install.packages("nom_du_paquet")
 
-donnees <- read.csv(file = "creditcard.csv", head = TRUE)
+donnees <- read.csv(file = "creditcard.csv", head = TRUE) #télécharger creditcard.csv d'abord
 
 #On enlève Time
 donnees$Time <- NULL
 
-#Ces deux lignes sont à enlever à la fin (pour ne pas perdre de temps lorsque les fonctions tournent)
-indice <- sample(1:nrow(donnees),0.05*nrow(donnees))
-donnees <- donnees[ indice,]
-
-#Aperçu textuel:
-summary(donnees)
 
 #Contenu de la colonne Class
 length(which(donnees$Class == 0))
 length(which(donnees$Class == 1))
+
+
+#Ces deux lignes sont à enlever si la machine le permet
+indice <- sample(1:nrow(donnees),0.1*nrow(donnees))
+donnees <- donnees[ indice,]
+
+#Aperçu textuel:
+summary(donnees)
 
 
 #Aperçu graphique en exprimant les trois premières données en fonction de la données à prédire (cartevp)
@@ -44,17 +45,18 @@ apprentissage_feature <- subset(apprentissage,select=-Class)
 donnees_feature <- subset(donnees,select=-Class)
 test_feature <- subset(test,select=-Class)
 
-for(i in 1:12){
-	if(i==1){
+#Boucle affectant le résultat de chaque méthode au tableau stat
+for(i in 1:11){
+	if(i==1){ #Classifieur Bayésien naïf
 		modele <- naiveBayes(as.factor(apprentissage$Class)~., data=apprentissage_feature)
 		prediction <- predict(modele, test)
-	}else if(i==2){
+	}else if(i==2){#RF
 		modele <- randomForest(apprentissage_feature, as.factor(apprentissage$Class))
 		prediction <- predict(modele, test)
-	}else if(i==3){
+	}else if(i==3){#CART
 		modele <- rpart(factor(donnees$Class) ~ ., data = donnees_feature)
 		prediction <- predict(modele, donnees, type="class")
-	}else if(i==4){
+	}else if(i==4){#KNN
 		iterations= 10
 		erreur <- vector(mode="integer", length=iterations)
 		for(k1 in 1:iterations){ #On choisit le meilleur k
@@ -63,18 +65,18 @@ for(i in 1:12){
 		}
 		k1=which.min(erreur)
 		prediction <- knn(apprentissage_feature,test_feature,cl=apprentissage$Class,k1)
-	}else if(i==5){
+	}else if(i==5){#Régression logistique
 		modele = glm(formula = apprentissage$Class ~.,family = binomial,data = apprentissage_feature)
 		prediction = predict(modele,type = 'response',newdata = test_feature)
-	}else if(i==6){
+	}else if(i==6){#LDA
 		modele <- lda(donnees$Class ~ ., data = donnees_feature)
 		prediction <- predict(modele, donnees_feature)
 		pr <- pr.curve( prediction$class, donnees$Class, curve = TRUE );
-	}else if(i==7){
+	}else if(i==7){#QDA
 		modele <- qda(donnees$Class ~ ., data = donnees_feature)
 		prediction <- predict(modele, donnees_feature)
 		pr <- pr.curve( prediction$class, donnees$Class, curve = TRUE );
-	}else if(i==8){
+	}else if(i==8){#SVM
 		modele <- svm(donnees$Class ~ ., data=donnees, kernel="linear")
 	}else if(i==9){
 		modele <- svm(donnees$Class ~ ., data=donnees, kernel="polynomial")
@@ -92,3 +94,4 @@ for(i in 1:12){
 	}
 	stat[i,1] <-pr$auc.integral
 }
+stat

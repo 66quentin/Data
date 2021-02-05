@@ -1,4 +1,4 @@
-#fichier à éxecuter dans le dossiet des datasets
+#Par Quentin Guardia, qguardia66@gmail.com
 library(caret) #confusionMatrix
 library(e1071) #naiveBayes et svm
 library(class) #knn
@@ -7,7 +7,7 @@ library(rpart) #rpart pour CART
 library(randomForest) #randomForest
 #en cas d'absence du package, écrire: install.packages("nom_du_paquet")
 
-donnees <- read.delim("VisaPremier.txt") 
+donnees <- read.delim("datasets/VisaPremier.txt") 
 
 #On supprime les données non ou peu prédictives
 donnees <- donnees[, !(names(donnees) %in% c("matricul","cartevp","sexe", "departem", "nbimpaye", "mteparte", "nbbon", "mtbon", "nbeparte"))]
@@ -19,12 +19,19 @@ levels(donnees$sitfamil) <- c(1:length(levels(as.factor(donnees$sitfamil))))
 levels(donnees$csp) <- c(1:length(levels(as.factor(donnees$csp))))
 levels(donnees$codeqlt) <- c(1:length(levels(as.factor(donnees$codeqlt))))
 
+#En cas d'erreur de NA par la suite, relancer le programme en décommentant la ligne dessous
+#donnees <- donnees[, !(names(donnees) %in% c("sitfamil","csp","codeqlt"))]
+
 #Aperçu textuel:
 summary(donnees)
-apply(donnees, 2, sd) #ecart-type
 
 
-#Aperçu graphique en exprimant les trois premières données en fonction de la données à prédire (cartevp)
+#Contenu de la colonne cartevpr
+length(which(donnees$cartevpr == 0))
+length(which(donnees$cartevpr == 1))
+
+
+#Aperçu graphique en exprimant les trois premières données en fonction de la données à prédire (cartevpr)
 pairs(donnees[,1:3], col=as.numeric(cartevpr))
 
 
@@ -41,7 +48,7 @@ while(i < ncol(donnees)){
 #Tableau récapitulatif
 stat<-matrix(list(), nrow=11, ncol=2)
 colnames(stat) <- c("accuracy","F-measure")
-rownames(stat) <- c("Bayésien naïf", "randomForest", "CART", "KNN" "Régression logistique", "LDA", "QDA", "SVM linéaire", "SVM polynomial", "SVM base radiale", "SVM sigmoide")
+rownames(stat) <- c("Bayésien naïf", "randomForest", "CART", "KNN", "Régression logistique", "LDA", "QDA", "SVM linéaire", "SVM polynomial", "SVM base radiale", "SVM sigmoide")
 
 #On fait 10 itérations pour chaque méthode de prédiction pour calculer accuracy et F-measure moyen
 n=47
@@ -102,11 +109,11 @@ for(i in 1:47){
 			j <- j+1
 		}
 		seuil1=which.max(fiabilite)
-		seuil2=0.40+0.05*(seuil1-1)
+		seuil2=0.30+0.05*(seuil1-1)
 		modele <- glm(donnees$cartevpr~.,data=donnees[,!colnames(donnees) %in% c("sitfamil","csp","codeqlt")])
 		prediction <- ifelse(predict(modele, as.data.frame(donnees$cartevpr)) >= seuil2, 1, 0)
 		resultats <- confusionMatrix(table(prediction,donnees$cartevpr))
-	}else if(i>41 & i < 43){
+	}else if(i>41 & i < 44){
 		if(i==42){#LDA
 			modele <- lda(donnees$cartevpr ~ ., data = donnees_feature[,-6])
 		}else if(i==43){#QDA
@@ -134,7 +141,7 @@ for(i in 1:47){
 			j <- j+1
 		}
 		seuil1=which.max(fiabilite)
-		seuil2=0.40+0.05*(seuil1-1)
+		seuil2=0.30+0.05*(seuil1-1)
 		prediction = ifelse(predict(modele,donnees) >=seuil2, 1, 0)
 		resultats <- confusionMatrix(table(prediction,donnees$cartevpr), positive="1")
 	}

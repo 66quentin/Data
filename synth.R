@@ -1,4 +1,4 @@
-#fichier à éxecuter dans le dossiet des datasets
+#Par Quentin Guardia, qguardia66@gmail.com
 library(caret) #confusionMatrix
 library(e1071) #naiveBayes et svm
 library(class) #knn
@@ -7,7 +7,7 @@ library(rpart) #rpart pour CART
 library(randomForest) #randomForest
 #en cas d'absence du package, écrire: install.packages("nom_du_paquet")
 
-donnees <- read.delim("spiral.txt") #Valable pour les données synthétiques: flame, spiral, aggregation
+donnees <- read.delim("datasets/Aggregation.txt") #Valable pour les données synthétiques: flame, spiral, Aggregation
 attach(donnees)
 
 
@@ -73,7 +73,7 @@ for (k in 1:407) {
 		resultats <- confusionMatrix(table(prediction,test[,3]))
 	}else if(k==401){ #Régression logistique
 		modele <- glm(donnees[,3]~.,data=donnees[,-3])
-		prediction <- round(predict(modele, as.data.frame(donnees[,3]))) #Threshold temporaire
+		prediction <- round(predict(modele, as.data.frame(donnees[,3]))) #Approximatif
 		prediction <- factor(as.factor(prediction), levels=levels(as.factor(donnees[,3])))
 		resultats <- confusionMatrix(table(prediction,donnees[,3]))
 	}else if(k>401 & k < 404){

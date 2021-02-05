@@ -6,7 +6,7 @@ Méthodes de prédiction utilisées:
     • randomForest
     • LDA
     • QDA
-    • SVM linéaire et non-linéaires (linéaire, polynomial, base radial et sigmoïde) 
+    • SVM linéaire et non-linéaires (linéaire, polynomial, base radiale et sigmoïde) 
     • régression logistique
     • KNN 
     
@@ -24,11 +24,6 @@ visa.R: (données réelles)
 
 	Prédit la variable cartevpr du jeu de données VisaPremier.txt, qui indique si la personne détient un carte Visa Premier.
 
-synth.R: (données réelles)
+fraude.R: (données réelles)
 
 	Prédit la variable class du jeu de données creditcard.csv, qui indique s'il y a fraude lors de la transaction. Le fichier étant trop lourd pour github, on le retrouve sur: https://www.kaggle.com/mlg-ulb/creditcardfraud
-	
-	
-A FAIRE:
-
-mettre "par quentin guardia" + éditer chemin
