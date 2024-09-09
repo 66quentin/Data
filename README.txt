@@ -1,4 +1,4 @@
-Programmes réalisés par Quentin Guardia, qguardia66@gmail.com
+Programmes réalisés par Quentin Guardia, quentin.guardia@protonmail.com
 
 Méthodes de prédiction utilisées:
     • Classifieur bayésien naïf
