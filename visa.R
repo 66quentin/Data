@@ -1,4 +1,4 @@
-#Par Quentin Guardia, qguardia66@gmail.com
+#Par QG, qguardia66@gmail.com
 library(caret) #confusionMatrix
 library(e1071) #naiveBayes et svm
 library(class) #knn
